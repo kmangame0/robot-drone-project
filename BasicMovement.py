@@ -1,5 +1,6 @@
 import time
 import ps_drone                # Imports the PS-Drone-API
+
 drone = ps_drone.Drone()       # Initializes the PS-Drone-API
 drone.startup()                # Connects to the drone and starts subprocesses
 time.sleep(1)
@@ -16,22 +17,41 @@ drone.useDemoMode(False)
 ##drone.stop()                   # Drone stops...
 ##time.sleep(2)                  # ... needs, like a car, time to stop
 
-while landed == False:
-    while drone.NavDataCount==NDC:      time.sleep(0.001)
-    print landed
-    try:
-        drone.getNDpackage(["demo","pressure_raw","altitude","magneto","wifi"])
-        #print "Altitude: "+str(abs(drone.NavData["altitude"][3]))
-        alt = abs(drone.NavData["altitude"][3])
-        if alt > 200 : ##Altitude in cm
-            drone.moveDown(10)
-            drone.hover()
+def Movement():
+    landed = False
+    NDC =   drone.NavDataCount
+    while landed == False:
+        #while drone.NavDataCount==NDC:      time.sleep(0.001)
+        #print landed
+        #try:
+        alt = 151
+        print "Here"
+        if drone.NavDataCount-NDC <1:
+              print "Lost "+str(drone.NavDataCount-NDC-1)+" NavData"
         else:
-            landed = True
-            drone.land()
-    except:
-        print "Corrupt Data"
-        continue
+            drone.getNDpackage(["demo","pressure_raw","altitude","magneto","wifi"])
+            #try:
+            
+            alt = drone.NavData["altitude"][3]
+            print "Altitude: "+str(drone.NavData["altitude"][3])
+            #except:
+               
+            if alt > 350 : ##Altitude in cm
+                #try:
+                drone.moveDown(10)
+                drone.hover()
+                #except:
+            else:
+                landed = True
+                drone.land()
+                exit(0)
+            #except:
+                #print "Corrupt Data"
+                #continue
+        NDC = drone.NavDataCount
+        print "Here2"
+
+Movement()
 
 ##
 ##drone.moveBackward()       
