@@ -28,7 +28,8 @@ if os.name == 'posix':	import termios, fcntl	# for getKey(), ToDo: Reprogram for
  
 commitsuicideV, showVid, vCruns, lockV, debugV =	False, False, False, threading.Lock(), False	# Global variables for video-decoding
 offsetND, suicideND, commitsuicideND = 0, False, False												# Global variables for NavDava-decoding
-
+orangeCount = 0
+centerCount = 0
 
 #Neu:
 #	changeIP
@@ -1058,8 +1059,7 @@ def vCapture(VidPipePath, parent_pipe):
 		receiveWatchdog.cancel()
 		decTime =			decTimeRev-time.time()
 		tlag =				time.time()-declag
-                #small = cv2.resize(image, (0,0), fx=0.5, fy=0.8)
-                cv2.imwrite("img.png", image)
+
 		if not codecOK and success:
 			try:
 				if image.shape[:2]==(360,640) or image.shape[:2]==(368,640) or image.shape[:2]==(720,1280) or image.shape[:2]==(1080,1920):
@@ -1944,6 +1944,123 @@ def watchdogND(parentPID):
 		except:		commitsuicideND=True
 # It seems that you just have to reinitialize the network-connection once and the drone keeps on sending forever then.
 
+def findOrange(img):
+    width, height = img.size
+    pic = img.load()
+    mostOrange = 1
+    previousTally = 0
+    currentTally = 0
+    orangeCount = 0
+    centerCount = 0
+    #Top Left
+    for x in range (0,width/3):
+        for y in range (0,height/3):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 254 and r < 256 and g > 164 and g < 166 and b > -1 and b < 1:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+    previousTally = currentTally
+    
+    #Top Center
+    currentTally = 0
+    for x in range (width/3,width/2):
+        for y in range (0,height/3):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 254 and r < 256 and g > 164 and g < 166 and b > -1 and b < 1:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+    if currentTally > previousTally:
+        mostOrange = 2
+    previousTally = currentTally
+
+    #Top Right
+    currentTally = 0
+    for x in range (width/2,width):
+        for y in range (0,height/3):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 254 and r < 256 and g > 164 and g < 166 and b > -1 and b < 1:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+    if currentTally > previousTally:
+        mostOrange = 3
+    previousTally = currentTally
+
+    #Left
+    currentTally = 0
+    for x in range (0,width/3):
+        for y in range (height/3,height/2):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 254 and r < 256 and g > 164 and g < 166 and b > -1 and b < 1:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+    if currentTally > previousTally:
+        mostOrange = 4
+    previousTally = currentTally
+
+    #Center
+    currentTally = 0
+    for x in range (width/3,width/2):
+        for y in range (height/3,height/2):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 254 and r < 256 and g > 164 and g < 166 and b > -1 and b < 1:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+                centerCount = centerCount + 1
+    if currentTally > previousTally:
+        mostOrange = 5
+    previousTally = currentTally
+
+    #Right
+    currentTally = 0
+    for x in range (width/2,width):
+        for y in range (height/3,height/2):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 254 and r < 256 and g > 164 and g < 166 and b > -1 and b < 1:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+    if currentTally > previousTally:
+        mostOrange = 6
+    previousTally = currentTally
+
+    #Bottom Left
+    currentTally = 0
+    for x in range (0,width/3):
+        for y in range (height/2,height):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 254 and r < 256 and g > 164 and g < 166 and b > -1 and b < 1:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+    if currentTally > previousTally:
+        mostOrange = 7
+    previousTally = currentTally
+
+    #Bottom Center
+    currentTally = 0
+    for x in range (height/3,height/2):
+        for y in range (height/2,height):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 254 and r < 256 and g > 164 and g < 166 and b > -1 and b < 1:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+    if currentTally > previousTally:
+        mostOrange = 8
+    previousTally = currentTally
+
+    #Bottom Right
+    currentTally = 0
+    for x in range (height/2,height):
+        for y in range (height/2,height):
+            r, g, b, a = img.getpixel((x,y))
+            if r > 150 and r < 300 and g > 100 and g < 200 and b > -50 and b < 50:
+                currentTally = currentTally + 1
+                orangeCount = orangeCount + 1
+    if currentTally > previousTally:
+        mostOrange = 9
+    previousTally = currentTally
+
+    #Return the sector with the most orange
+    return mostOrange 
+
 def mainloopND(DroneIP,NavDataPort,parent_pipe,parentPID):
 	global commitsuicideND
 	something2send, MinimalPacketLength, timetag =	False, 30, 0
@@ -2046,174 +2163,7 @@ def mainloopND(DroneIP,NavDataPort,parent_pipe,parentPID):
 	try:	navdata_pipe.close()
 	except:	pass
 	
-foundGreen = False
-def findOrange(img):
-    width, height = img.size
-    pic = img.load()
-    mostOrange = 0
-    previousTally = 0
-    currentTally = 0
-    orangeCount = 0
-    centerCount = 0
-    global foundGreen
-    
-    #Left
-    for x in range (0,50):
-        for y in range (0,height):
-            r, g, b = img.getpixel((x,y))
-            if r > 60 and r < 145 and g > 160 and g < 240 and b > 40 and b < 115:
-                currentTally = currentTally + 1
-                orangeCount = orangeCount + 1
-                foundGreen = True
-    if currentTally > previousTally:
-        mostOrange = 1
-    previousTally = currentTally
-    
-    #Center
-    currentTally = 0
-    for x in range (50,270):
-        for y in range (0,height):
-            r, g, b = img.getpixel((x,y))
-            if r > 60 and r < 145 and g > 160 and g < 240 and b > 40 and b < 115:
-                currentTally = currentTally + 1
-                orangeCount = orangeCount + 1
-                foundGreen = True
-    if currentTally > previousTally:
-        mostOrange = 2
-    previousTally = currentTally
-
-    #Right
-    currentTally = 0
-    for x in range (270,320):
-        for y in range (0,height):
-            r, g, b = img.getpixel((x,y))
-            if r > 60 and r < 145 and g > 160 and g < 240 and b > 40 and b < 115:
-                currentTally = currentTally + 1
-                orangeCount = orangeCount + 1
-                foundGreen = True
-    if currentTally > previousTally:
-        mostOrange = 3
-    previousTally = currentTally
-
-    #Return the sector with the most orange
-    #print "In orange"
-    return mostOrange, orangeCount, foundGreen
-
-def findYellow(img):
-    width, height = img.size
-    pic = img.load()
-    mostYellow = 1
-    previousTally = 0
-    currentTally = 0
-    yellowCount = 0
-    centerCount = 0
-    #Top Left
-    for x in range (0,width/3):
-        for y in range (0,height/3):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    mostYellow = 1
-    previousTally = currentTally
-    
-    #Top Center
-    currentTally = 0
-    for x in range (width/3,width/2):
-        for y in range (0,height/3):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    if currentTally > previousTally:
-        mostYellow = 2
-    previousTally = currentTally
-
-    #Top Right
-    currentTally = 0
-    for x in range (width/2,width):
-        for y in range (0,height/3):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    if currentTally > previousTally:
-        mostYellow = 3
-    previousTally = currentTally
-
-    #Left
-    currentTally = 0
-    for x in range (0,width/3):
-        for y in range (height/3,height/2):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    if currentTally > previousTally:
-        mostYellow = 4
-    previousTally = currentTally
-    #Center
-    currentTally = 0
-    for x in range (width/3,width/2):
-        for y in range (height/3,height/2):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    if currentTally > previousTally:
-        mostYellow = 5
-    previousTally = currentTally
-
-    #Right
-    currentTally = 0
-    for x in range (width/2,width):
-        for y in range (height/3,height/2):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    if currentTally > previousTally:
-        mostYellow = 6
-    previousTally = currentTally
-
-    #Bottom Left
-    currentTally = 0
-    for x in range (0,width/3):
-        for y in range (height/2,height):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    if currentTally > previousTally:
-        mostYellow = 7
-    previousTally = currentTally
-
-    #Bottom Center
-    currentTally = 0
-    for x in range (height/3,height/2):
-        for y in range (height/2,height):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    if currentTally > previousTally:
-        mostYellow = 8
-    previousTally = currentTally
-
-    #Bottom Right
-    currentTally = 0
-    for x in range (height/2,height):
-        for y in range (height/2,height):
-            r, g, b = img.getpixel((x,y))
-            if r > 170 and r < 240 and g > 170 and g < 210 and b > 105 and b < 200:
-                currentTally = currentTally + 1
-                yellowCount = yellowCount + 1
-    if currentTally > previousTally:
-        mostYellow = 9
-    previousTally = currentTally
-    
-    #Return the sector with the most orange
-    return mostYellow, yellowCount 
+	
 ##################################################################################################
 ###### Playground																			######
 ##################################################################################################
@@ -2221,139 +2171,104 @@ if __name__ == "__main__":
 ###
 ### Here you can write your first test-codes and play around with them
 ###
-        from sys import argv
-        import zbar
-        #import Image
-        import time, sys
-        import ps_drone                                              # Import PS-Drone
 
-        drone = ps_drone.Drone()                                     # Start using drone
-        drone.startup()                                              # Connects to drone and starts subprocesses
-        takeOff = True
-        drone.reset()                                                # Sets drone's status to good (LEDs turn green when red)
-        while (drone.getBattery()[0] == -1):      time.sleep(0.1)    # Waits until drone has done its reset
-        print "Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1])	# Gives a battery-status
-        drone.useDemoMode(True)                                      # Just give me 15 basic dataset per second (is default anyway)
+	import time
+	import ps_drone
 
-        ##### Mainprogram begin #####
-        drone.setConfigAllID()                                       # Go to multiconfiguration-mode
-        drone.sdVideo()                                              # Choose lower resolution (hdVideo() for...well, guess it)
-        drone.frontCam()                                             # Choose front view
-        drone.videoFPS(5)
-        #drone.midVideo()
-        ground = True
-        drone.groundVideo(ground)
-        CDC = drone.ConfigDataCount
-        while CDC == drone.ConfigDataCount:       time.sleep(0.0001) # Wait until it is done (after resync is done)
-        drone.startVideo()                                           # Start video-function
-        drone.showVideo()                                            # Display the video
-        done = True
-        ##### And action !
-        print "Use <space> to toggle front- and groundcamera, any other key to stop"
-        IMC =    drone.VideoImageCount                               # Number of encoded videoframes
-        stop =   False
-        NDC = drone.NavDataCount
-        movement = True
-        while not stop:
-            y = 0
-##            while drone.NavDataCount==NDC:      time.sleep(0.001)
-##            drone.getNDpackage(["all"])
-##            drone.addNDpackage(["altitude"])
-##            print "Altitude: " + str(drone.NavData["demo"])
-            while drone.VideoImageCount == IMC: time.sleep(0.01)     # Wait until the next video-frame
-            IMC = drone.VideoImageCount
-            key = drone.getKey()                                     # Gets a pressed key
-            if key==" ":
-                print "Yes"
-            elif key and key != " ":    stop =   True
-    
-            if takeOff == True:
-                    takeOff = False
-                    drone.takeoff()
-                    drone.hover()
-                    
-            x = time.localtime()
-            xSeconds = x[5]
-            while movement == True:
-                    y = time.localtime()
-                    ySeconds = y[5]
-                    if ySeconds - xSeconds > 4:
-                            movement = False
-                    drone.moveForward()
-            movement == True
-            x = time.localtime()
-            xSeconds = x[5]
-            while movement == True:
-                    y = time.localtime()
-                    ySeconds = y[5]
-                    if ySeconds - xSeconds > 2:
-                            movement = False
-                    drone.moveLeft()
-            drone.hover()
-            movement = True
-            x = time.localtime()
-            xSeconds = x[5]
-            while movement == True:
-                    y = time.localtime()
-                    ySeconds = y[5]
-                    if ySeconds - xSeconds > 8:
-                            movement = False
-                    drone.moveBackward()
-            drone.hover()
+	drone = ps_drone.Drone()								# Start using drone					
+	drone.printBlue("Battery: ")
 
-            movement = True
-            x = time.localtime()
-            xSeconds = x[5]
-            while movement == True:
-                    y = time.localtime()
-                    ySeconds = y[5]
-                    if ySeconds - xSeconds > 2:
-                            movement = False
-                    drone.moveRight()
-            drone.hover()
+	drone.startup()											# Connects to drone and starts subprocesses
+	drone.reset()											# Always good, at start
 
-            movement = True
-            x = time.localtime()
-            xSeconds = x[5]
-            while movement == True:
-                    y = time.localtime()
-                    ySeconds = y[5]
-                    if ySeconds - xSeconds > 4:
-                            movement = False
-                    drone.moveForward()
-            drone.hover()
-            
-            drone.land()
-##                            
-##                    width, height = img.size
-##                    curx = width/2
-##                    cury = height/2
-##                    scanner = zbar.ImageScanner()
-##                    scanner.parse_config('enable')
-##                    pil = Image.open('img.png').convert('L')
-##                    raw = pil.tostring()
-##                    image = zbar.Image(width, height, 'Y800', raw)
-##                    scanner.scan(image)
-##                    for symbol in image:
-##                        print 'decoded', symbol.type, 'symbol', '"%s"' % symbol.data
-##                    try:
-##                            sym = iter(image).next()
-##                            print sym.location
-##                            qrx = sym.location[0][0]
-##                            qry = sym.location[0][1]
-##                            xseparation = curx - qrx
-##                            yseparation = cury - qry
-##
-##                            if xseparation > 0 and yseparation > 0:
-##                                    print "Top Left"
-##                            elif xseparation < 0 and yseparation > 0:
-##                                    print "Top Right"
-##                            elif xseparation > 0 and yseparation < 0:
-##                                    print "Bottom Left"
-##                            elif xseparation < 0 and yseparation < 0:
-##                                    print "Bottom Right"
-##                    except:
-##                            print "Can't get location"
+	while drone.getBattery()[0] == -1:	time.sleep(0.1)		# Waits until the drone has done its reset
+	time.sleep(0.5)											# Give it some time to fully awake 
+
+	drone.printBlue("Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1]))	# Gives a battery-status
+	
+	stop = False
+
+	##Don't touch anything above this text
+#	drone.setConfigAllID()                                       # Go to multiconfiguration-mode
+#	drone.sdVideo()                                              # Choose lower resolution (hdVideo() for...well, guess it)
+#	drone.frontCam()  
+#	#drone.midVideo()                                           # Choose front view
+#	CDC = drone.ConfigDataCount
+#	while CDC == drone.ConfigDataCount:       time.sleep(0.0001) # Wait until it is done (after resync is done)
+#	drone.startVideo()                                           # Start video-function
+#	drone.showVideo()                                            # Display the video
+#
+#	print "Use <space> to toggle front- and groundcamera, any other key to stop"
+#	IMC =    drone.VideoImageCount                               # Number of encoded videoframes
+	stop =   False
+	ground = False
+
+	# drone.takeoff()
+	# time.sleep(3)
+	# drone.hover()
+	# time.sleep(500/1000)
+
+	while not stop:
+		key = drone.getKey()
+		if key == " ":
+			if drone.NavData["demo"][0][2] and not drone.NavData["demo"][0][3]:	drone.takeoff()
+			else:																drone.land()
+		elif key == "0":	drone.hover()
+		elif key == "w":	drone.moveForward()
+		elif key == "s":	drone.moveBackward()
+		elif key == "a":	drone.moveLeft()
+		elif key == "d":	drone.moveRight()
+		elif key == "8":	drone.moveUp()
+		elif key == "2":	drone.moveDown()
+		elif key != "":		stop = True
+
+		# img = Image.open('test2.png')
+		# command = findOrange(img)
+		# width, height = img.size
+		# totalPixels = (width/3)*(height/3)
+		# if orangeCount > 500:
+		# 	if command == 1:
+		# 		drone.moveForward()
+		# 		drone.moveLeft()
+		# 	elif command == 2:
+		# 		drone.moveForward()
+		# 	elif command == 3:
+		# 		drone.moveForward()
+		# 		drone.moveRight()
+		# 	elif command == 4: 
+		# 		drone.moveLeft()
+		# 	elif command == 5: 
+		# 		if (totalPixels - centerCount) < 10000:
+		# 			drone.land()
+		# 		else:
+		# 			drone.moveDown()
+		# 	elif command == 6:
+		# 		drone.moveRight()
+		# 	elif command == 7:
+		# 		drone.moveBackward()
+		# 		drone.moveLeft()
+		# 	elif command == 8:
+		# 		drone.moveBackward()
+		# 	elif command == 9:
+		# 		drone.moveBackward()
+		# 		drone.moveRight()
+		# else:
+		# 	drone.hover()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	print "Batterie: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1])	# Gives a battery-status
