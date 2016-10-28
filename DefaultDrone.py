@@ -2261,6 +2261,7 @@ if __name__ == "__main__":
             try:
                 if done == True:
                     done = False
+                    print "Opening Image"
                     img = Image.open('img.png')
                     if takeOff == True:
                             takeOff = False

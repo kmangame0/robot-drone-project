@@ -1041,14 +1041,17 @@ def vCapture(VidPipePath, parent_pipe):
 	time.sleep(0.2)
 	declag =	time.time()
 	count =		-3
-	imageXsize = 	0
-	imageYsize = 	0
+	imageXsize = 	360
+	imageYsize = 	640
 	windowName = 	"PS-Drone"
 	codecOK = 		False
 	lastKey =		""
 	cc=0
-
+        x = time.localtime()
+        xSeconds = x[5]
 	while not commitsuicideV:
+                y = time.localtime()
+                ySeconds = y[5]
 		decTimeRev = 		time.time()
 		receiveWatchdog = threading.Timer(2.0, VideoReceiveWatchdog, [parent_pipe,"vCapture", debugV])	# Resets video if something hangs
 		receiveWatchdog.start()
@@ -1057,7 +1060,13 @@ def vCapture(VidPipePath, parent_pipe):
 		receiveWatchdog.cancel()
 		decTime =			decTimeRev-time.time()
 		tlag =				time.time()-declag
-
+		if abs(ySeconds - xSeconds) > 1:
+                        print "Here"
+                        x = time.localtime()
+                        xSeconds = x[5]
+                        y = time.localtime()
+                        ySeconds = y[5]
+                        cv2.imwrite("img.png", image)
 		if not codecOK and success:
 			try:
 				if image.shape[:2]==(360,640) or image.shape[:2]==(368,640) or image.shape[:2]==(720,1280) or image.shape[:2]==(1080,1920):

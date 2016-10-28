@@ -11,11 +11,39 @@ while (drone.getBattery()[0] == -1):  time.sleep(0.1)                         # 
 print "Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1]) # Gives a battery-status
 drone.useDemoMode(False)
 drone.takeoff()
-time.sleep(10)
+time.sleep(12)
 forward = True
-
 land = False
-time.sleep(4) # Stop for 10 seconds in order to acquire data
+drone.setSpeed(0.2) 
+time.sleep(0.5)
+drone.hover()
+time.sleep(1)
+
+drone.moveLeft()
+time.sleep(1)
+drone.stop()
+time.sleep(2)
+
+drone.moveForward()
+time.sleep(1)
+drone.stop()
+time.sleep(2)
+
+drone.moveRight()
+time.sleep(1)
+drone.stop()
+time.sleep(2)
+
+drone.moveBackward()
+time.sleep(1)
+drone.stop()
+time.sleep(2)
+
+drone.moveLeft()
+time.sleep(1)
+drone.stop()
+time.sleep(2)
+
 
 while land == False:
     drone.getNDpackage(["demo","pressure_raw","altitude","magneto","wifi"])       # Info needed
@@ -27,21 +55,9 @@ while land == False:
         if land == False:
             drone.hover()
             time.sleep(0.1)
+  
     else:
-        if forward == True:
-            drone.moveForward()
-            time.sleep(1.5)
-            forward = False
-            land = True
-            drone.hover()
-            time.sleep(1)
-        else:
-            land = True
-            drone.land()
-            exit(0)
-            
-##    else:
-##        land = True
-##        drone.land()
-##        exit(0)
-
+        land = True
+        drone.land()
+        exit(0)
+        
