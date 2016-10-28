@@ -1060,13 +1060,13 @@ def vCapture(VidPipePath, parent_pipe):
 		receiveWatchdog.cancel()
 		decTime =			decTimeRev-time.time()
 		tlag =				time.time()-declag
-		if abs(ySeconds - xSeconds) > 1:
-                        print "Here"
-                        x = time.localtime()
-                        xSeconds = x[5]
-                        y = time.localtime()
-                        ySeconds = y[5]
-                        cv2.imwrite("img.png", image)
+##		if abs(ySeconds - xSeconds) > 1:
+##                        print "Here"
+##                        x = time.localtime()
+##                        xSeconds = x[5]
+##                        y = time.localtime()
+##                        ySeconds = y[5]
+##                        cv2.imwrite("img.png", image)
 		if not codecOK and success:
 			try:
 				if image.shape[:2]==(360,640) or image.shape[:2]==(368,640) or image.shape[:2]==(720,1280) or image.shape[:2]==(1080,1920):
@@ -1086,7 +1086,7 @@ def vCapture(VidPipePath, parent_pipe):
 				imageYsize, imageXsize = image.shape[:2]
 				windowName = "PS-Drone - "+str(imageXsize)+"x"+str(imageYsize)
 			if success:
-				if tlag > 0.02:	count+=1
+				if tlag > 0.1:	count+=1 #Changed from 0.02
 				if count > 0:
 					ImgCount+=1
 					if not show and not hide:
@@ -1094,10 +1094,13 @@ def vCapture(VidPipePath, parent_pipe):
 						hide = True
 					if show:
 						cv2.imshow(windowName, image)
-						key=cv2.waitKey(1)
+						key=cv2.waitKey(1) #Changed this from 1
+						key = 1 # Added this line
 						if key>-1:	parent_pipe.send(("keypressed",0,chr(key%256),0))
 					parent_pipe.send(("Image",ImgCount,image,decTime))
-			else:	time.sleep(0.01)
+					count = 0 #Added this line
+					ImgCount = 0 #Added this line
+			else:	time.sleep(0.1) #Changed from 0.01
 			declag = time.time()
 
 			if showVid:
