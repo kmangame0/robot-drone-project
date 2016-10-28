@@ -2,8 +2,6 @@ import time, sys
 import ps_drone
 from PIL import Image
 
-##### Mainprogram begin #####
-
 class Video:
 
     def __init__(self, *args, **kwargs):
@@ -17,14 +15,10 @@ class Video:
         print "Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1])
         drone.useDemoMode(False)
         drone.setConfigAllID()
-        #drone.groundVideo(True)  
-        #drone.sdVideo()
-        #drone.slowVideo()
-        #drone.videoBitrate(1000)
-        #drone.groundCam()
+
         drone.setMConfig("video:video_channel","1")
-        drone.setMConfig("video:video_codec","129")
-        drone.setMConfig("video:bitrate",500)
+        drone.setMConfig("video:video_codec","128")#Default 128
+        drone.setMConfig("video:bitrate",5000) #Default 500
         drone.setMConfig("video:codec_fps",5)
         #drone.videoFPS(5)
         #drone.showCommands()
@@ -42,28 +36,26 @@ class Video:
         self.mostGreen = 1
         self.previousTally = 0
         self.currentTally = 0
-        #drone.groundVideo(True)   
         self.videoProcessing()
 
 
 
 
     def videoProcessing(self):
-        time.sleep(2)
         drone = self.drone
-        drone.debug = True
-        print drone.getConfig()
+        #drone.debug = True
+        #print drone.getConfig()
         xtime = time.localtime()
         xSeconds = xtime[5]
         while not self.stop:
-            print drone.getConfig()
+            #print drone.getConfig()
         ##    y = time.localtime()
         ##    ySeconds = y[5]
         ##    if ySeconds - xSeconds > 20:
         ##        drone.land()
         ##        exit(0)
             while drone.VideoImageCount == self.IMC:
-                time.sleep(0.01)
+                time.sleep(0.001) #Changed from 0.01
             self.IMC = drone.VideoImageCount
 ##            if self.processingImage == False:
 ##                self.processingImage = True

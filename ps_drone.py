@@ -1100,7 +1100,7 @@ def vCapture(VidPipePath, parent_pipe):
 					parent_pipe.send(("Image",ImgCount,image,decTime))
 					count = 0 #Added this line
 					ImgCount = 0 #Added this line
-			else:	time.sleep(0.1) #Changed from 0.01
+			else:	time.sleep(0.2) #Changed from 0.01 #2nd revision: Changed from 0.1 to 0.2
 			declag = time.time()
 
 			if showVid:
