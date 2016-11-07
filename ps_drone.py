@@ -1026,8 +1026,16 @@ def watchdogV(parentPID, ownPID):
 # Thread to capture, decode and display the video-stream			
 def vCapture(VidPipePath, parent_pipe):
 	import cv2
+	import numpy as np #Added this line
 	global vCruns, commitsuicideV, showVid, lockV, debugV
 
+        boundaries = [
+	([0, 50, 0], [150, 255, 150]),
+##	([86, 31, 4], [220, 88, 50]),
+##	([25, 146, 190], [62, 174, 250]),
+##	([103, 86, 65], [145, 133, 128])
+        ]#Added this code
+        
 	show = 		False
 	hide =		True
 	vCruns =	True
@@ -1060,17 +1068,45 @@ def vCapture(VidPipePath, parent_pipe):
 		receiveWatchdog.cancel()
 		decTime =			decTimeRev-time.time()
 		tlag =				time.time()-declag
-		if abs(ySeconds - xSeconds) > 1:
+		
+##                cv2.line(image,(213,0),(213,360),(0,0,0),2)
+##                cv2.line(image,(427,0),(427,360),(0,0,0),2)
+##                cv2.line(image,(0,120),(640,120),(0,0,0),2)
+##                cv2.line(image,(0,240),(640,240),(0,0,0),2)
+
+                lower_green = np.array([20,50,10],np.uint8)
+                upper_green = np.array([80,255,255],np.uint8)
+                hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+                frame_threshold = cv2.inRange(hsv, lower_green, upper_green)
+
+                se1 = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
+                se2 = cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
+                mask = cv2.morphologyEx(frame_threshold, cv2.MORPH_CLOSE, se1)
+                mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, se2)
+
+                mask = np.dstack([mask, mask, mask]) / 255
+                out = image * mask
+
+                
+
+##                for (lower, upper) in boundaries:
+##                        # create NumPy arrays from the boundaries
+##                        lower = np.array(lower, dtype = "uint8")
+##                        upper = np.array(upper, dtype = "uint8")
+##
+##                        # find the colors within the specified boundaries and apply
+##                        # the mask
+##                        mask = cv2.inRange(out, lower, upper)
+##                        output = cv2.bitwise_and(out, out, mask = mask)
+##                
+                if abs(ySeconds - xSeconds) > 0.5:
                         print "Capturing Frame"
                         x = time.localtime()
                         xSeconds = x[5]
                         y = time.localtime()
                         ySeconds = y[5]
-                        cv2.imwrite("img.png", image)
-                cv2.line(image,(213,0),(213,360),(0,0,0),2)
-                cv2.line(image,(427,0),(427,360),(0,0,0),2)
-                cv2.line(image,(0,120),(640,120),(0,0,0),2)
-                cv2.line(image,(0,240),(640,240),(0,0,0),2) 
+                        cv2.imwrite("img.png", out)
+
 		if not codecOK and success:
 			try:
 				if image.shape[:2]==(360,640) or image.shape[:2]==(368,640) or image.shape[:2]==(720,1280) or image.shape[:2]==(1080,1920):
@@ -1097,7 +1133,7 @@ def vCapture(VidPipePath, parent_pipe):
 						cv2.destroyAllWindows()
 						hide = True
 					if show:
-						cv2.imshow(windowName, image)
+						cv2.imshow(windowName, out)#Changed image to output in second arg
 						key=cv2.waitKey(1) #Changed this from 1
 						key = 1 # Added this line
 						if key>-1:	parent_pipe.send(("keypressed",0,chr(key%256),0))
