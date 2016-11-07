@@ -1060,13 +1060,17 @@ def vCapture(VidPipePath, parent_pipe):
 		receiveWatchdog.cancel()
 		decTime =			decTimeRev-time.time()
 		tlag =				time.time()-declag
-##		if abs(ySeconds - xSeconds) > 1:
-##                        print "Here"
-##                        x = time.localtime()
-##                        xSeconds = x[5]
-##                        y = time.localtime()
-##                        ySeconds = y[5]
-##                        cv2.imwrite("img.png", image)
+		if abs(ySeconds - xSeconds) > 1:
+                        print "Capturing Frame"
+                        x = time.localtime()
+                        xSeconds = x[5]
+                        y = time.localtime()
+                        ySeconds = y[5]
+                        cv2.imwrite("img.png", image)
+                cv2.line(image,(213,0),(213,360),(0,0,0),2)
+                cv2.line(image,(427,0),(427,360),(0,0,0),2)
+                cv2.line(image,(0,120),(640,120),(0,0,0),2)
+                cv2.line(image,(0,240),(640,240),(0,0,0),2) 
 		if not codecOK and success:
 			try:
 				if image.shape[:2]==(360,640) or image.shape[:2]==(368,640) or image.shape[:2]==(720,1280) or image.shape[:2]==(1080,1920):

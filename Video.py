@@ -10,23 +10,21 @@ class Video:
         drone.startup()
 
         drone.reset()
-        time.sleep(2)
+        time.sleep(1)
         while (drone.getBattery()[0] == -1):      time.sleep(0.1)
         print "Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1])
         drone.useDemoMode(False)
         drone.setConfigAllID()
-
         drone.setMConfig("video:video_channel","1")
-        drone.setMConfig("video:video_codec","128")#Default 128
-        drone.setMConfig("video:bitrate",5000) #Default 500
+        drone.setMConfig("video:video_codec","128")
+        drone.setMConfig("video:bitrate",5000)
         drone.setMConfig("video:codec_fps",5)
-        #drone.videoFPS(5)
-        #drone.showCommands()
+
         CDC = drone.ConfigDataCount
         while CDC == drone.ConfigDataCount:       time.sleep(0.0001)
+
         drone.startVideo()
         drone.showVideo()
-        
         self.IMC =    drone.VideoImageCount
 
         self.stop =   False
@@ -34,150 +32,270 @@ class Video:
         self.takeOff = False
         self.processingImage = False
         self.mostGreen = 1
+        self.previousGreen = 0
         self.previousTally = 0
         self.currentTally = 0
         self.videoProcessing()
-
-
-
+        self.startProcessing = False
+        self.lostGreen = False
+        drone.moveLeft(0.1)
+        time.sleep(1)
 
     def videoProcessing(self):
+        self.previousGreen = 0
         drone = self.drone
-        #drone.debug = True
-        #print drone.getConfig()
+        drone.setSpeed(0.1)
+        drone.getNDpackage(["demo"])  
+        firstYaw = drone.NavData["demo"][2][2]
+        
         xtime = time.localtime()
         xSeconds = xtime[5]
         while not self.stop:
-            #print drone.getConfig()
-        ##    y = time.localtime()
-        ##    ySeconds = y[5]
-        ##    if ySeconds - xSeconds > 20:
-        ##        drone.land()
-        ##        exit(0)
-            while drone.VideoImageCount == self.IMC:
-                time.sleep(0.001) #Changed from 0.01
             self.IMC = drone.VideoImageCount
-##            if self.processingImage == False:
-##                self.processingImage = True
-##                try:
-##                    self.mostGreen = 1
-##                    self.previousTally = 0
-##                    self.currentTally = 0
-##                    print "Opening Image"
-##                    img = Image.open('img.png')
-##
-##                    if self.takeOff == False:
-##                        width, height = img.size
-##                        
-##                        #Top Left
-##                        for x in range (0,width/3):
-##                            for y in range (0,height/3):
-##                                r, g, b = img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 1
-##                        self.previousTally = self.currentTally
-##                        
-##                        #Top Center
-##                        self.currentTally = 0
-##                        for x in range (width/3,width/2):
-##                            for y in range (0,height/3):
-##                                r, g, b= img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 2
-##                        self.previousTally = self.currentTally
-##
-##                        #Top Right
-##                        self.currentTally = 0
-##                        for x in range (width/2,width):
-##                            for y in range (0,height/3):
-##                                r, g, b= img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 3
-##                        self.previousTally = self.currentTally
-##                        
-##                        #Left
-##                        self.currentTally = 0
-##                        for x in range (0,width/3):
-##                            for y in range (height/3,height/2):
-##                                r, g, b= img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 4
-##                        self.previousTally = self.currentTally
-##
-##                        #Center
-##                        self.currentTally = 0
-##                        for x in range (width/3,width/2):
-##                            for y in range (height/3,height/2):
-##                                r, g, b= img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 5
-##                        self.previousTally = self.currentTally
-##
-##                        #Right
-##                        self.currentTally = 0
-##                        for x in range (width/2,width):
-##                            for y in range (height/3,height/2):
-##                                r, g, b= img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 6
-##                        self.previousTally = self.currentTally
-##
-##                        #Bottom Left
-##                        self.currentTally = 0
-##                        for x in range (0,width/3):
-##                            for y in range (height/2,height):
-##                                r, g, b= img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 7
-##                        self.previousTally = self.currentTally
-##
-##                        #Bottom Center
-##                        self.currentTally = 0
-##                        for x in range (height/3,height/2):
-##                            for y in range (height/2,height):
-##                                r, g, b= img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 8
-##                        self.previousTally = self.currentTally
-##
-##                        #Bottom Right
-##                        self.currentTally = 0
-##                        for x in range (height/2,height):
-##                            for y in range (height/2,height):
-##                                r, g, b= img.getpixel((x,y))
-##                                if r > 100 and r < 200 and g > 180 and g < 256 and b < 120:
-##                                    self.currentTally = self.currentTally + 1
-##                        if self.currentTally > self.previousTally:
-##                            self.mostGreen = 9
-##                        self.previousTally = self.currentTally
-##                    
-##            ##            if self.takeOff == True:
-##            ##                self.takeOff = False
-##            ##                drone.takeoff()
-##            ##                time.sleep(10)
-##                        print self.mostGreen
-##                        self.processingImage = False
-##                       
-##                except:
-##                    print "Error"
-##                    self.processingImage = False
-##                    continue
+            if self.processingImage == False:
+                self.processingImage = True
+                try:
+                    self.mostGreen = 0
+                    self.previousTally = 0
+                    self.currentTally = 0
+                    img = Image.open('img.png')
+                    
+                    if self.takeOff == False:
+                        self.takeOff = True
+                        time.sleep(5)
+                        print "Taking off"
+                        #drone.takeoff()
+                        time.sleep(12)
+                        print "Hovering"
+                        #drone.hover()
+                        time.sleep(1)
+                        print "Done Calibrating"
+##                        drone.getNDpackage(["demo"])  
+##                        secondYaw = drone.NavData["demo"][2][2]
+##                        firstYaw = firstYaw + secondYaw
+                        self.processingImage = False
+
+                    else:
+##                        if abs(secondYaw-firstYaw) > 3.5:
+##                            drone.getNDpackage(["demo"])  
+##                            secondYaw = drone.NavData["demo"][2][2]
+##                            if secondYaw > firstYaw:
+##                                drone.turnAngle(-2,0.25)
+##                            else:
+##                                drone.turnAngle(2,0.25)
+##                            self.processingImage = False
+
+##                        drone.getNDpackage(["demo"])
+##                        alt = drone.NavData["demo"][3]
+##                        if alt > 40:
+##                            drone.moveDown(.5)
+##                            time.sleep(0.2)
+##                            drone.hover()
+##                            time.sleep(0.2)
+##                            self.processingImage = False
+                            
+                        for x in range(0,640):
+                            for y in range(0,340):
+                                if y%2 == 0:
+                                    #Top Left
+                                    if x >= 0 and x<=213 and y >=0 and y <=120:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 213:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 1
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+                                    #Top Center        
+                                    elif x >= 214 and x<=426 and y >=0 and y <=120:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 426:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 2
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+                                    #Top Right        
+                                    elif x >= 427 and x<=639 and y >=0 and y <=120:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 639:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 3
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+                                    #Left
+                                    elif x >= 0 and x<=213 and y >=120 and y <=240:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 213:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 4
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+                                    #Center
+                                    elif x >= 214 and x<=426 and y >=120 and y <=240:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 426:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 5
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+                                    #Right
+                                    elif x >= 427 and x<=639 and y >=120 and y <=240:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 639:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 6
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+                                    #Bottom Left
+                                    elif x >= 0 and x<=213 and y >=240 and y <=360:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 213:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 7
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+                                    #Bottom Center
+                                    elif x >= 214 and x<=426 and y >=240 and y <=360:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 426:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 8
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+                                    #Bottom Right
+                                    elif x >= 427 and x<=639 and y >=240 and y <=360:
+                                        r, g, b = img.getpixel((x,y))
+                                        if x == 639:
+                                            if self.currentTally > self.previousTally:
+                                                self.mostGreen = 9
+                                                self.previousTally = self.currentTally
+                                            self.currentTally = 0
+                                        if r > -1 and r < 10 and g > -1 and g < 10 and b >-1 and b < 10:
+                                            self.currentTally = self.currentTally + 1
+         
+                        print "Most Green Quadrant: " + str(self.mostGreen)
+
+                        if self.mostGreen == 0:
+                            print "Lost Green"
+##                            if self.previousGreen == 1:
+##                                self.mostGreen = 9
+##                            elif self.previousGreen == 2:
+##                                self.mostGreen = 8
+##                            elif self.previousGreen == 3:
+##                                self.mostGreen = 7
+##                            elif self.previousGreen == 4:
+##                                self.mostGreen = 6
+##                            elif self.previousGreen == 5:
+##                                self.mostGreen = 5
+##                            elif self.previousGreen == 6:
+##                                self.mostGreen = 4
+##                            elif self.previousGreen == 7:
+##                                self.mostGreen = 3
+##                            elif self.previousGreen == 8:
+##                                self.mostGreen = 2
+##                            elif self.previousGreen == 9:
+##                                self.mostGreen = 1
+                        if self.mostGreen == 1:
+                            print "Forward, Left"
+##                            drone.moveForward(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+##                            drone.moveLeft(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+                        if self.mostGreen == 2:
+                            print "Forward"
+##                            drone.moveForward(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+                        if self.mostGreen == 3:
+                            print "Forward, Right"
+##                            drone.moveForward(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+##                            drone.moveRight(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+                        if self.mostGreen == 4:
+                            print "Left"
+##                            drone.moveLeft(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+                        if self.mostGreen == 5:
+                            print "Decend"
+##                            drone.getNDpackage(["demo"])
+##                            alt = drone.NavData["demo"][3]
+##                            if alt > 25:
+##                                drone.moveDown(1.0)
+##                                time.sleep(1.0)
+##                                drone.hover()
+##                                time.sleep(0.1)
+##                            else:
+##                                drone.land()
+##                                exit(0)
+                        if self.mostGreen == 6:
+                            print "Right"
+##                            drone.moveRight(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+                        if self.mostGreen == 7:
+                            print "Back, Left"
+##                            drone.moveBackward(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+##                            drone.moveLeft()
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+                        if self.mostGreen == 8:
+                            print "Back"
+##                            drone.moveBackward(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+                        if self.mostGreen == 9:
+                            print "Back, Right"
+##                            drone.moveBackward(0.1)
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+##                            drone.moveRight()
+##                            time.sleep(0.5)
+##                            drone.stop()
+##                            time.sleep(1)
+
+                        if self.mostGreen != 0:
+                            self.previousGreen = self.mostGreen
+                        self.mostGreen = 0
+                        
+                        self.processingImage = False
+                except:
+                    #print "Error"
+                    self.processingImage = False
+                    continue
 
 
 Video()
