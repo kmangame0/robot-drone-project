@@ -1027,6 +1027,8 @@ def watchdogV(parentPID, ownPID):
 def vCapture(VidPipePath, parent_pipe):
 	import cv2
 	import numpy as np #Added this line
+	import imutils
+	from collections import deque
 	global vCruns, commitsuicideV, showVid, lockV, debugV
 
         boundaries = [
@@ -1035,7 +1037,8 @@ def vCapture(VidPipePath, parent_pipe):
 ##	([25, 146, 190], [62, 174, 250]),
 ##	([103, 86, 65], [145, 133, 128])
         ]#Added this code
-        
+        greenLower = (29, 86, 6)
+        greenUpper = (64, 255, 255)
 	show = 		False
 	hide =		True
 	vCruns =	True
@@ -1057,6 +1060,7 @@ def vCapture(VidPipePath, parent_pipe):
 	cc=0
         x = time.localtime()
         xSeconds = x[5]
+        pts = deque(maxlen=5)
 	while not commitsuicideV:
                 y = time.localtime()
                 ySeconds = y[5]
@@ -1068,45 +1072,16 @@ def vCapture(VidPipePath, parent_pipe):
 		receiveWatchdog.cancel()
 		decTime =			decTimeRev-time.time()
 		tlag =				time.time()-declag
-		
-##                cv2.line(image,(213,0),(213,360),(0,0,0),2)
-##                cv2.line(image,(427,0),(427,360),(0,0,0),2)
-##                cv2.line(image,(0,120),(640,120),(0,0,0),2)
-##                cv2.line(image,(0,240),(640,240),(0,0,0),2)
-
-                lower_green = np.array([20,50,10],np.uint8)
-                upper_green = np.array([80,255,255],np.uint8)
-                hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-                frame_threshold = cv2.inRange(hsv, lower_green, upper_green)
-
-                se1 = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
-                se2 = cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
-                mask = cv2.morphologyEx(frame_threshold, cv2.MORPH_CLOSE, se1)
-                mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, se2)
-
-                mask = np.dstack([mask, mask, mask]) / 255
-                out = image * mask
+		#frame = imutils.resize(image, width=640)
+		hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+####		mask = cv2.inRange(hsv, greenLower, greenUpper)
+####                mask = cv2.erode(mask, None, iterations=2)
+####                mask = cv2.dilate(mask, None, iterations=2)
+##                cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+##		cv2.CHAIN_APPROX_SIMPLE)[-2]
+##                center = None
 
                 
-
-##                for (lower, upper) in boundaries:
-##                        # create NumPy arrays from the boundaries
-##                        lower = np.array(lower, dtype = "uint8")
-##                        upper = np.array(upper, dtype = "uint8")
-##
-##                        # find the colors within the specified boundaries and apply
-##                        # the mask
-##                        mask = cv2.inRange(out, lower, upper)
-##                        output = cv2.bitwise_and(out, out, mask = mask)
-##                
-                if abs(ySeconds - xSeconds) > 0.5:
-                        print "Capturing Frame"
-                        x = time.localtime()
-                        xSeconds = x[5]
-                        y = time.localtime()
-                        ySeconds = y[5]
-                        cv2.imwrite("img.png", out)
-
 		if not codecOK and success:
 			try:
 				if image.shape[:2]==(360,640) or image.shape[:2]==(368,640) or image.shape[:2]==(720,1280) or image.shape[:2]==(1080,1920):
@@ -1133,7 +1108,15 @@ def vCapture(VidPipePath, parent_pipe):
 						cv2.destroyAllWindows()
 						hide = True
 					if show:
-						cv2.imshow(windowName, out)#Changed image to output in second arg
+                                                if abs(ySeconds - xSeconds) > 0.5:
+                                                        print "Capturing Frame"
+                                                        x = time.localtime()
+                                                        xSeconds = x[5]
+                                                        y = time.localtime()
+                                                        ySeconds = y[5]
+                                                        cv2.imwrite("img.png", hsv)
+
+						cv2.imshow(windowName, hsv)#Changed image to output in second arg
 						key=cv2.waitKey(1) #Changed this from 1
 						key = 1 # Added this line
 						if key>-1:	parent_pipe.send(("keypressed",0,chr(key%256),0))
