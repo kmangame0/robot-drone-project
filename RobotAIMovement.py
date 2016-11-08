@@ -10,6 +10,7 @@ time.sleep(2)
 ser.flushInput()
 ser.flushOutput()
 
+time.sleep(25)
 checksum = 127 & (130 + 0 + 127)
 packet = struct.pack('BBBB',130,0,127,checksum)
 ser.write(packet)
@@ -17,7 +18,7 @@ checksum = 127 & (130 + 4 + 127)
 packet = struct.pack('BBBB',130,4,127,checksum)
 ser.write(packet)
 
-time.sleep(10)
+time.sleep(5)
 
 checksum = 127 & (130 + 0 + 127)
 packet = struct.pack('BBBB',130,0,127,checksum)
@@ -35,3 +36,4 @@ checksum = 127 & (130 + 4 + 0)
 packet = struct.pack('BBBB',130,4,0,checksum)
 ser.write(packet)
 
+exit(0)

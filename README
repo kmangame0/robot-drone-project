@@ -1,0 +1,11 @@
+Do NOT modify ps_drone.py
+Instead, create py script and:
+import ps_drone
+
+Video.py is primary moving script
+RobotAIMovement is the basic outline for moving the robot.
+Sensor recieves data from the Ultra sonic sensor
+XBoxController gets information from the XBox controller
+
+Great Links:
+https://github.com/reixd/ps-drone/blob/master/tutorials/getNavData.py

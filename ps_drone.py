@@ -1061,6 +1061,7 @@ def vCapture(VidPipePath, parent_pipe):
         x = time.localtime()
         xSeconds = x[5]
         pts = deque(maxlen=5)
+        done = True
 	while not commitsuicideV:
                 y = time.localtime()
                 ySeconds = y[5]
@@ -1073,7 +1074,7 @@ def vCapture(VidPipePath, parent_pipe):
 		decTime =			decTimeRev-time.time()
 		tlag =				time.time()-declag
 		#frame = imutils.resize(image, width=640)
-		hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+		#hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 ####		mask = cv2.inRange(hsv, greenLower, greenUpper)
 ####                mask = cv2.erode(mask, None, iterations=2)
 ####                mask = cv2.dilate(mask, None, iterations=2)
@@ -1108,15 +1109,19 @@ def vCapture(VidPipePath, parent_pipe):
 						cv2.destroyAllWindows()
 						hide = True
 					if show:
-                                                if abs(ySeconds - xSeconds) > 0.5:
+                                                if abs(ySeconds - xSeconds) > 0.25 and done == True:
+                                                        done = False
                                                         print "Capturing Frame"
                                                         x = time.localtime()
                                                         xSeconds = x[5]
                                                         y = time.localtime()
                                                         ySeconds = y[5]
-                                                        cv2.imwrite("img.png", hsv)
+                                                        newx,newy = image.shape[1]/4,image.shape[0]/4
+                                                        newImage = cv2.resize(image,(newx,newy))
+                                                        cv2.imwrite("img.png", newImage)
+                                                        done = True
 
-						cv2.imshow(windowName, hsv)#Changed image to output in second arg
+						cv2.imshow(windowName, image)#Changed image to output in second arg
 						key=cv2.waitKey(1) #Changed this from 1
 						key = 1 # Added this line
 						if key>-1:	parent_pipe.send(("keypressed",0,chr(key%256),0))

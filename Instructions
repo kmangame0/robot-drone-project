@@ -1,9 +1,0 @@
-Do NOT modify ps_drone.py
-Instead, create py script and:
-import ps_drone
-
-BasicMovement is primary testing script.
-controller2.py is for the xbox controller
-
-Great Links:
-https://github.com/reixd/ps-drone/blob/master/tutorials/getNavData.py
