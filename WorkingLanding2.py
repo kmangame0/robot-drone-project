@@ -47,6 +47,10 @@ time.sleep(1)
 drone.stop()
 time.sleep(2)
 
+drone.getNDpackage(["demo"])  
+secondYaw = drone.NavData["demo"][2][2]
+firstYaw = firstYaw + secondYaw
+
 while abs(secondYaw-firstYaw)> 2.5:
     print abs(secondYaw-firstYaw)
     drone.getNDpackage(["demo"])  
@@ -65,6 +69,10 @@ drone.moveForward()
 time.sleep(1)
 drone.stop()
 time.sleep(2)
+
+drone.getNDpackage(["demo"])  
+secondYaw = drone.NavData["demo"][2][2]
+firstYaw = firstYaw + secondYaw
 
 while abs(secondYaw-firstYaw)> 2.5:
     print abs(secondYaw-firstYaw)
@@ -85,6 +93,10 @@ time.sleep(1)
 drone.stop()
 time.sleep(2)
 
+drone.getNDpackage(["demo"])  
+secondYaw = drone.NavData["demo"][2][2]
+firstYaw = firstYaw + secondYaw
+
 while abs(secondYaw-firstYaw)> 2.5:
     print abs(secondYaw-firstYaw)
     drone.getNDpackage(["demo"])  
@@ -104,6 +116,10 @@ time.sleep(1)
 drone.stop()
 time.sleep(2)
 
+drone.getNDpackage(["demo"])  
+secondYaw = drone.NavData["demo"][2][2]
+firstYaw = firstYaw + secondYaw
+
 while abs(secondYaw-firstYaw)> 2.5:
     print abs(secondYaw-firstYaw)
     drone.getNDpackage(["demo"])  
@@ -122,6 +138,10 @@ drone.moveLeft()
 time.sleep(1)
 drone.stop()
 time.sleep(2)
+
+drone.getNDpackage(["demo"])  
+secondYaw = drone.NavData["demo"][2][2]
+firstYaw = firstYaw + secondYaw
 
 while abs(secondYaw-firstYaw)> 2.5:
     print abs(secondYaw-firstYaw)
