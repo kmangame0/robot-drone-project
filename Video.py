@@ -39,9 +39,11 @@ class Video:
         self.videoProcessing()
         self.startProcessing = False
         self.lostGreen = False
+        self.red = 0
 
     def videoProcessing(self):
         self.previousGreen = 0
+        self.red= 0
         drone = self.drone
         drone.setSpeed(0.1)
 ##        drone.getNDpackage(["demo"])  
@@ -64,7 +66,7 @@ class Video:
                         time.sleep(10)
                         print "Taking off"
                         drone.takeoff()
-                        time.sleep(5)
+                        time.sleep(10)
                         print "Hovering"
                         drone.hover()
                         time.sleep(1)
@@ -90,7 +92,8 @@ class Video:
                         for x in range (0,53):
                             for y in range (0,30):
                                 r, g, b = img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 1
@@ -101,7 +104,8 @@ class Video:
                         for x in range (54,106):
                             for y in range (0,30):
                                 r, g, b= img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 2
@@ -112,7 +116,8 @@ class Video:
                         for x in range (107,159):
                             for y in range (0,30):
                                 r, g, b= img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 3
@@ -123,7 +128,8 @@ class Video:
                         for x in range (0,53):
                             for y in range (30,60):
                                 r, g, b= img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 4
@@ -134,7 +140,8 @@ class Video:
                         for x in range (54,106):
                             for y in range (30,60):
                                 r, g, b= img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 5
@@ -145,7 +152,8 @@ class Video:
                         for x in range (107,159):
                             for y in range (30,60):
                                 r, g, b= img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 6
@@ -156,7 +164,8 @@ class Video:
                         for x in range (0,53):
                             for y in range (60,90):
                                 r, g, b= img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 7
@@ -167,7 +176,8 @@ class Video:
                         for x in range (54,106):
                             for y in range (60,90):
                                 r, g, b= img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 8
@@ -178,14 +188,18 @@ class Video:
                         for x in range (107,159):
                             for y in range (60,90):
                                 r, g, b= img.getpixel((x,y))
-                                if r > 30 and r < 141 and g < 15 and b < 41:
+                                if r <155 and g < 30 and b < 70:
+                                    self.red = self.red + 1
                                     self.currentTally = self.currentTally + 1
                         if self.currentTally > self.previousTally:
                             self.mostGreen = 9
                         self.previousTally = self.currentTally
              
                         print "Most Red Quadrant: " + str(self.mostGreen)
-
+                        if self.red > 500:
+                            drone.land()
+                            self.stop = True
+                            exit(9)
                         if self.mostGreen == 0:
                             print "Lost Green"
                             self.mostGreen = self.previousGreen
@@ -280,6 +294,7 @@ class Video:
                             #time.sleep(1)
 
                         self.processingImage = False
+                        self.red = 0
                         if self.mostGreen != 0:
                             self.previousGreen = self.mostGreen
                 except:

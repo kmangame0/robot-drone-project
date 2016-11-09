@@ -1116,7 +1116,7 @@ def vCapture(VidPipePath, parent_pipe):
                                                         xSeconds = x[5]
                                                         y = time.localtime()
                                                         ySeconds = y[5]
-                                                        newx,newy = image.shape[1]/4,image.shape[0]/4
+                                                        newx,newy = image.shape[1]/4,image.shape[0]/2
                                                         newImage = cv2.resize(image,(newx,newy))
                                                         cv2.imwrite("img.png", newImage)
                                                         done = True
@@ -2109,6 +2109,9 @@ if __name__ == "__main__":
 	
 	stop = False
 	while not stop:
+                drone.getNDpackage(["demo"])       # Info needed
+                alt = drone.NavData["demo"][3]
+                print str(alt)
 		key = drone.getKey()
 		if key == " ":
 			if drone.NavData["demo"][0][2] and not drone.NavData["demo"][0][3]:	drone.takeoff()
