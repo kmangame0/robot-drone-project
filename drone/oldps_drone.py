@@ -1026,8 +1026,19 @@ def watchdogV(parentPID, ownPID):
 # Thread to capture, decode and display the video-stream			
 def vCapture(VidPipePath, parent_pipe):
 	import cv2
+	import numpy as np #Added this line
+	import imutils
+	from collections import deque
 	global vCruns, commitsuicideV, showVid, lockV, debugV
 
+        boundaries = [
+	([0, 50, 0], [150, 255, 150]),
+##	([86, 31, 4], [220, 88, 50]),
+##	([25, 146, 190], [62, 174, 250]),
+##	([103, 86, 65], [145, 133, 128])
+        ]#Added this code
+        greenLower = (29, 86, 6)
+        greenUpper = (64, 255, 255)
 	show = 		False
 	hide =		True
 	vCruns =	True
@@ -1041,14 +1052,19 @@ def vCapture(VidPipePath, parent_pipe):
 	time.sleep(0.2)
 	declag =	time.time()
 	count =		-3
-	imageXsize = 	0
-	imageYsize = 	0
+	imageXsize = 	360
+	imageYsize = 	640
 	windowName = 	"PS-Drone"
 	codecOK = 		False
 	lastKey =		""
 	cc=0
-
+        x = time.localtime()
+        xSeconds = x[5]
+        pts = deque(maxlen=5)
+        done = True
 	while not commitsuicideV:
+                y = time.localtime()
+                ySeconds = y[5]
 		decTimeRev = 		time.time()
 		receiveWatchdog = threading.Timer(2.0, VideoReceiveWatchdog, [parent_pipe,"vCapture", debugV])	# Resets video if something hangs
 		receiveWatchdog.start()
@@ -1057,7 +1073,16 @@ def vCapture(VidPipePath, parent_pipe):
 		receiveWatchdog.cancel()
 		decTime =			decTimeRev-time.time()
 		tlag =				time.time()-declag
+		#frame = imutils.resize(image, width=640)
+		#hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+####		mask = cv2.inRange(hsv, greenLower, greenUpper)
+####                mask = cv2.erode(mask, None, iterations=2)
+####                mask = cv2.dilate(mask, None, iterations=2)
+##                cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+##		cv2.CHAIN_APPROX_SIMPLE)[-2]
+##                center = None
 
+                
 		if not codecOK and success:
 			try:
 				if image.shape[:2]==(360,640) or image.shape[:2]==(368,640) or image.shape[:2]==(720,1280) or image.shape[:2]==(1080,1920):
@@ -1077,18 +1102,33 @@ def vCapture(VidPipePath, parent_pipe):
 				imageYsize, imageXsize = image.shape[:2]
 				windowName = "PS-Drone - "+str(imageXsize)+"x"+str(imageYsize)
 			if success:
-				if tlag > 0.02:	count+=1
+				if tlag > 0.1:	count+=1 #Changed from 0.02
 				if count > 0:
 					ImgCount+=1
 					if not show and not hide:
 						cv2.destroyAllWindows()
 						hide = True
 					if show:
-						cv2.imshow(windowName, image)
-						key=cv2.waitKey(1)
+                                                if abs(ySeconds - xSeconds) > 0.25 and done == True:
+                                                        done = False
+                                                        print "Capturing Frame"
+                                                        x = time.localtime()
+                                                        xSeconds = x[5]
+                                                        y = time.localtime()
+                                                        ySeconds = y[5]
+                                                        newx,newy = image.shape[1]/4,image.shape[0]/2
+                                                        newImage = cv2.resize(image,(newx,newy))
+                                                        cv2.imwrite("img.png", newImage)
+                                                        done = True
+
+						cv2.imshow(windowName, image)#Changed image to output in second arg
+						key=cv2.waitKey(1) #Changed this from 1
+						key = 1 # Added this line
 						if key>-1:	parent_pipe.send(("keypressed",0,chr(key%256),0))
 					parent_pipe.send(("Image",ImgCount,image,decTime))
-			else:	time.sleep(0.01)
+					count = 0 #Added this line
+					ImgCount = 0 #Added this line
+			else:	time.sleep(0.2) #Changed from 0.01 #2nd revision: Changed from 0.1 to 0.2
 			declag = time.time()
 
 			if showVid:
@@ -2069,6 +2109,9 @@ if __name__ == "__main__":
 	
 	stop = False
 	while not stop:
+                drone.getNDpackage(["demo"])       # Info needed
+                alt = drone.NavData["demo"][3]
+                print str(alt)
 		key = drone.getKey()
 		if key == " ":
 			if drone.NavData["demo"][0][2] and not drone.NavData["demo"][0][3]:	drone.takeoff()
