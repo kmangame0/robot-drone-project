@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients no-cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths" style="" lang="en"><!--<![endif]--><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Histograms - 2: Histogram Equalization — OpenCV-Python Tutorials 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+
+  
+    <link rel="stylesheet" href="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/sphinx_rtd_theme.css" type="text/css">
+  
+
+  
+    <link rel="top" title="OpenCV-Python Tutorials 1 documentation" href="https://opencv-python-tutroals.readthedocs.io/en/latest/index.html">
+        <link rel="up" title="Histograms in OpenCV" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_table_of_contents_histograms/py_table_of_contents_histograms.html">
+        <link rel="next" title="Histograms - 3 : 2D Histograms" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_2d_histogram/py_2d_histogram.html">
+        <link rel="prev" title="Histograms - 1 : Find, Plot, Analyze !!!" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html"> 
+
+  
+  <script type="text/javascript" async="" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/ga.js"></script><script src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/modernizr.js"></script>
+
+
+<!-- RTD Extra Head -->
+
+<!-- 
+Always link to the latest version, as canonical.
+http://docs.readthedocs.org/en/latest/canonical.html
+-->
+<link rel="canonical" href="http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html">
+
+<link rel="stylesheet" href="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/readthedocs-doc-embed.css" type="text/css">
+
+<script type="text/javascript" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/readthedocs-data.js"></script>
+
+<!-- Add page-specific data, which must exist in the page js, not global -->
+<script type="text/javascript">
+READTHEDOCS_DATA['page'] = 'py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization'
+</script>
+
+<script type="text/javascript" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/readthedocs-dynamic-include.js"></script>
+
+<!-- end RTD <extrahead> --></head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/index.html" class="icon icon-home"> OpenCV-Python Tutorials
+          
+
+          
+            
+            <img src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/opencv-logo-white.png" class="logo">
+          
+          </a>
+
+          
+            
+            
+            
+              <div class="version">
+                latest
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input name="q" placeholder="Search docs" type="text">
+    <input name="check_keywords" value="yes" type="hidden">
+    <input name="area" value="default" type="hidden">
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html"><span class="toctree-expand"></span>OpenCV-Python Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_setup/py_table_of_contents_setup/py_table_of_contents_setup.html">Introduction to OpenCV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_table_of_contents_gui/py_table_of_contents_gui.html">Gui Features in OpenCV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_core/py_table_of_contents_core/py_table_of_contents_core.html">Core Operations</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_table_of_contents_imgproc/py_table_of_contents_imgproc.html"><span class="toctree-expand"></span>Image Processing in OpenCV</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_colorspaces/py_colorspaces.html">Changing Colorspaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_thresholding/py_thresholding.html">Image Thresholding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_geometric_transformations/py_geometric_transformations.html">Geometric Transformations of Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html">Smoothing Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html">Morphological Transformations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_gradients/py_gradients.html">Image Gradients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html">Canny Edge Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_pyramids/py_pyramids.html">Image Pyramids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_contours/py_table_of_contents_contours/py_table_of_contents_contours.html">Contours in OpenCV</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_table_of_contents_histograms/py_table_of_contents_histograms.html"><span class="toctree-expand"></span>Histograms in OpenCV</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html">Histograms - 1 : Find, Plot, Analyze !!!</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="">Histograms - 2: Histogram Equalization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_2d_histogram/py_2d_histogram.html">Histograms - 3 : 2D Histograms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_backprojection/py_histogram_backprojection.html">Histogram - 4 : Histogram Backprojection</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_transforms/py_table_of_contents_transforms/py_table_of_contents_transforms.html">Image Transforms in OpenCV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_template_matching/py_template_matching.html">Template Matching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html">Hough Line Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghcircles/py_houghcircles.html">Hough Circle Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_watershed/py_watershed.html">Image Segmentation with Watershed Algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_grabcut/py_grabcut.html">Interactive Foreground Extraction using GrabCut Algorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_table_of_contents_feature2d/py_table_of_contents_feature2d.html">Feature Detection and Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_video/py_table_of_contents_video/py_table_of_contents_video.html">Video Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_calib3d/py_table_of_contents_calib3d/py_table_of_contents_calib3d.html">Camera Calibration and 3D Reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_ml/py_table_of_contents_ml/py_table_of_contents_ml.html">Machine Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_photo/py_table_of_contents_photo/py_table_of_contents_photo.html">Computational Photography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_objdetect/py_table_of_contents_objdetect/py_table_of_contents_objdetect.html">Object Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_bindings/py_table_of_contents_bindings/py_table_of_contents_bindings.html">OpenCV-Python Bindings</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      <div class="wy-menu rst-pro"><div class="rst-pro-about"><a href="http://docs.readthedocs.io/en/latest/ethical-advertising.html"><i class="fa fa-info-circle"></i></a></div><a class="rst-pro-image-wrapper" href="https://readthedocs.org/sustainability/click/33/RG9V8rxjzH1O/" target="_blank"><img class="rst-pro-image" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/a.png"></a><span>Build, scale, and personalize your news feeds and activity streams with <a class="rst-pro-link" href="https://readthedocs.org/sustainability/click/33/RG9V8rxjzH1O/" target="_blank">getstream.io</a></span></div><div class="rst-pro-wrapper"></div></div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/index.html">OpenCV-Python Tutorials</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="https://opencv-python-tutroals.readthedocs.io/en/latest/index.html">Docs</a> »</li>
+      
+          <li><a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html">OpenCV-Python Tutorials</a> »</li>
+      
+          <li><a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_table_of_contents_imgproc/py_table_of_contents_imgproc.html">Image Processing in OpenCV</a> »</li>
+      
+          <li><a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_table_of_contents_histograms/py_table_of_contents_histograms.html">Histograms in OpenCV</a> »</li>
+      
+    <li>Histograms - 2: Histogram Equalization</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/abidrahmank/OpenCV2-Python-Tutorials/blob/master/source/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="histograms-2-histogram-equalization">
+<span id="histogram-equalization"></span><h1>Histograms - 2: Histogram Equalization<a class="headerlink" href="#histograms-2-histogram-equalization" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="goal">
+<h2>Goal<a class="headerlink" href="#goal" title="Permalink to this headline">¶</a></h2>
+<p>In this section,</p>
+<blockquote>
+<div><ul class="simple">
+<li>We will learn the concepts of histogram equalization and use it to improve the contrast of our images.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="theory">
+<h2>Theory<a class="headerlink" href="#theory" title="Permalink to this headline">¶</a></h2>
+<p>Consider an image whose pixel values are confined to some specific 
+range of values only. For eg, brighter image will have all pixels 
+confined to high values. But a good image will have pixels from all 
+regions of the image. So you need to stretch this histogram to either 
+ends (as given in below image, from wikipedia) and that is what 
+Histogram Equalization does (in simple words). This normally improves 
+the contrast of the image.</p>
+<blockquote>
+<div><img alt="Histograms Equalization" class="align-center" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/histogram_equalization.png">
+</div></blockquote>
+<p>I would recommend you to read the wikipedia page on <a class="reference external" href="http://en.wikipedia.org/wiki/Histogram_equalization">Histogram Equalization</a>
+ for more details about it. It has a very good explanation with worked 
+out examples, so that you would understand almost everything after 
+reading that. Instead, here we will see its Numpy implementation. After 
+that, we will see OpenCV function.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">'wiki.jpg'</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">hist</span><span class="p">,</span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="mi">256</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">256</span><span class="p">])</span>
+
+<span class="n">cdf</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+<span class="n">cdf_normalized</span> <span class="o">=</span> <span class="n">cdf</span> <span class="o">*</span> <span class="n">hist</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">/</span> <span class="n">cdf</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cdf_normalized</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">'b'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="mi">256</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">256</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">'r'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">256</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">((</span><span class="s1">'cdf'</span><span class="p">,</span><span class="s1">'histogram'</span><span class="p">),</span> <span class="n">loc</span> <span class="o">=</span> <span class="s1">'upper left'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Histograms Equalization" class="align-center" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/histeq_numpy1.jpg">
+<p>You can see histogram lies in brighter region. We need the full 
+spectrum. For that, we need a transformation function which maps the 
+input pixels in brighter region to output pixels in full region. That is
+ what histogram equalization does.</p>
+<p>Now we find the minimum histogram value (excluding 0) and apply the 
+histogram equalization equation as given in wiki page. But I have used 
+here, the masked array concept array from Numpy. For masked array, all 
+operations are performed on non-masked elements. You can read more about
+ it from Numpy docs on masked arrays.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">cdf_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_equal</span><span class="p">(</span><span class="n">cdf</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">cdf_m</span> <span class="o">=</span> <span class="p">(</span><span class="n">cdf_m</span> <span class="o">-</span> <span class="n">cdf_m</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">*</span><span class="mi">255</span><span class="o">/</span><span class="p">(</span><span class="n">cdf_m</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="n">cdf_m</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+<span class="n">cdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">cdf_m</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">'uint8'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we have the look-up table that gives us the information on what 
+is the output pixel value for every input pixel value. So we just apply 
+the transform.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">img2</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[</span><span class="n">img</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now we calculate its histogram and cdf as before ( you do it) and result looks like below :</p>
+<img alt="Histograms Equalization" class="align-center" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/histeq_numpy2.jpg">
+<p>Another important feature is that, even if the image was a darker 
+image (instead of a brighter one we used), after equalization we will 
+get almost the same image as we got. As a result, this is used as a 
+“reference tool” to make all images with same lighting conditions. This 
+is useful in many cases. For example, in face recognition, before 
+training the face data, the images of faces are histogram equalized to 
+make them all with same lighting conditions.</p>
+</div>
+<div class="section" id="histograms-equalization-in-opencv">
+<h2>Histograms Equalization in OpenCV<a class="headerlink" href="#histograms-equalization-in-opencv" title="Permalink to this headline">¶</a></h2>
+<p>OpenCV has a function to do this, <strong>cv2.equalizeHist()</strong>. Its input is just grayscale image and output is our histogram equalized image.</p>
+<p>Below is a simple code snippet showing its usage for same image we used :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">'wiki.jpg'</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">equ</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">equalizeHist</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">img</span><span class="p">,</span><span class="n">equ</span><span class="p">))</span> <span class="c1">#stacking images side-by-side</span>
+<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s1">'res.png'</span><span class="p">,</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="Histograms Equalization" class="align-center" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/equalization_opencv.jpg">
+<p>So now you can take different images with different light conditions, equalize it and check the results.</p>
+<p>Histogram equalization is good when histogram of the image is 
+confined to a particular region. It won’t work good in places where 
+there is large intensity variations where histogram covers a large 
+region, ie both bright and dark pixels are present. Please check the SOF
+ links in Additional Resources.</p>
+</div>
+<div class="section" id="clahe-contrast-limited-adaptive-histogram-equalization">
+<h2>CLAHE (Contrast Limited Adaptive Histogram Equalization)<a class="headerlink" href="#clahe-contrast-limited-adaptive-histogram-equalization" title="Permalink to this headline">¶</a></h2>
+<p>The first histogram equalization we just saw, considers the global 
+contrast of the image. In many cases, it is not a good idea. For 
+example, below image shows an input image and its result after global 
+histogram equalization.</p>
+<blockquote>
+<div><img alt="Problem of Global HE" class="align-center" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/clahe_1.jpg">
+</div></blockquote>
+<p>It is true that the background contrast has improved after histogram 
+equalization. But compare the face of statue in both images. We lost 
+most of the information there due to over-brightness. It is because its 
+histogram is not confined to a particular region as we saw in previous 
+cases (Try to plot histogram of input image, you will get more 
+intuition).</p>
+<p>So to solve this problem, <strong>adaptive histogram equalization</strong>
+ is used. In this, image is divided into small blocks called “tiles” 
+(tileSize is 8x8 by default in OpenCV). Then each of these blocks are 
+histogram equalized as usual. So in a small area, histogram would 
+confine to a small region (unless there is noise). If noise is there, it
+ will be amplified. To avoid this, <strong>contrast limiting</strong> is
+ applied. If any histogram bin is above the specified contrast limit (by
+ default 40 in OpenCV), those pixels are clipped and distributed 
+uniformly to other bins before applying histogram equalization. After 
+equalization, to remove artifacts in tile borders, bilinear 
+interpolation is applied.</p>
+<p>Below code snippet shows how to apply CLAHE in OpenCV:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">'tsukuba_l.png'</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># create a CLAHE object (Arguments are optional).</span>
+<span class="n">clahe</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">createCLAHE</span><span class="p">(</span><span class="n">clipLimit</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">tileGridSize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">cl1</span> <span class="o">=</span> <span class="n">clahe</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s1">'clahe_2.jpg'</span><span class="p">,</span><span class="n">cl1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the result below and compare it with results above, especially the statue region:</p>
+<blockquote>
+<div><img alt="Result of CLAHE" class="align-center" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/clahe_2.jpg">
+</div></blockquote>
+</div>
+<div class="section" id="additional-resources">
+<h2>Additional Resources<a class="headerlink" href="#additional-resources" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Wikipedia page on <a class="reference external" href="http://en.wikipedia.org/wiki/Histogram_equalization">Histogram Equalization</a></li>
+<li><a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/maskedarray.html">Masked Arrays in Numpy</a></li>
+</ol>
+<p>Also check these SOF questions regarding contrast adjustment:</p>
+<ol class="arabic simple" start="3">
+<li><a class="reference external" href="http://stackoverflow.com/questions/10549245/how-can-i-adjust-contrast-in-opencv-in-c">How can I adjust contrast in OpenCV in C?</a></li>
+<li><a class="reference external" href="http://stackoverflow.com/questions/10561222/how-do-i-equalize-contrast-brightness-of-images-using-opencv">How do I equalize contrast &amp; brightness of images using opencv?</a></li>
+</ol>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_2d_histogram/py_2d_histogram.html" class="btn btn-neutral float-right" title="Histograms - 3 : 2D Histograms" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html" class="btn btn-neutral" title="Histograms - 1 : Find, Plot, Analyze !!!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr>
+
+  <div role="contentinfo">
+    <p>
+        © Copyright 2013, Alexander Mordvintsev &amp; Abid K.
+      
+        <span class="commit">
+          Revision <code>43532856</code>.
+        </span>
+      
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org/">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: latest
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions"><!-- Inserted RTD Footer -->
+<div class="injected">
+
+  
+
+      
+      
+      
+      <dl>
+        <dt>Versions</dt>
+        
+         <strong> 
+        <dd><a href="http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html">latest</a></dd>
+         </strong> 
+        
+        
+        <dd><a href="http://opencv-python-tutroals.readthedocs.io/en/stable/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.html">stable</a></dd>
+        
+        
+      </dl>
+      
+      
+
+      
+      
+      <dl>
+        <dt>Downloads</dt>
+        
+        <dd><a href="https://readthedocs.org/projects/opencv-python-tutroals/downloads/pdf/latest/">PDF</a></dd>
+        
+        <dd><a href="https://readthedocs.org/projects/opencv-python-tutroals/downloads/htmlzip/latest/">HTML</a></dd>
+        
+        <dd><a href="https://readthedocs.org/projects/opencv-python-tutroals/downloads/epub/latest/">Epub</a></dd>
+        
+      </dl>
+      
+      
+
+      
+      <dl>
+        <!-- These are kept as relative links for internal installs that are http -->
+        <dt>On Read the Docs</dt>
+        <dd>
+          <a href="https://readthedocs.org/projects/opencv-python-tutroals/">Project Home</a>
+        </dd>
+        <dd>
+          <a href="https://readthedocs.org/projects/opencv-python-tutroals/builds/">Builds</a>
+        </dd>
+        <dd>
+          <a href="https://readthedocs.org/projects/opencv-python-tutroals/downloads/">Downloads</a>
+        </dd>
+      </dl>
+      
+
+      
+
+      
+      <dl>
+        <dt>On GitHub</dt>
+        <dd>
+          <a href="https://github.com/abidrahmank/OpenCV2-Python-Tutorials/blob/master/source/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.rst">View</a>
+        </dd>
+        <dd>
+          <a href="https://github.com/abidrahmank/OpenCV2-Python-Tutorials/edit/master/source/py_tutorials/py_imgproc/py_histograms/py_histogram_equalization/py_histogram_equalization.rst">Edit</a>
+        </dd>
+      </dl>
+      
+      
+
+      
+      <dl>
+        <dt>Search</dt>
+        <dd>
+          <div style="padding: 6px;">
+            <form id="flyout-search-form" class="wy-form" target="_blank" action="https://readthedocs.org/projects/opencv-python-tutroals/search/" method="get">
+              <input name="q" placeholder="Search docs" type="text">
+              </form>
+          </div>
+        </dd>
+      </dl>
+      
+
+
+
+      <hr>
+      
+      Free document hosting provided by <a href="https://readthedocs.org/">Read the Docs</a>. 
+      
+
+      
+
+</div>
+</div>
+  </div>
+
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/jquery-2.js"></script>
+      <script type="text/javascript" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/jquery-migrate-1.js"></script>
+      <script type="text/javascript" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/underscore.js"></script>
+      <script type="text/javascript" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/doctools.js"></script>
+      <script type="text/javascript" src="Histograms%20-%202:%20Histogram%20Equalization%20%E2%80%94%20OpenCV-Python%20Tutorials%201%20documentation_files/readthedocs-doc-embed.js"></script>
+
+  
+
+  
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+
+</body></html>
